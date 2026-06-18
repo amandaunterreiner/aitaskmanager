@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { useSession, signOut } from 'next-auth/react'
 import { Task, Category } from '@/lib/types'
 import TaskInput from '@/components/TaskInput'
 import TaskItem from '@/components/TaskItem'
@@ -11,6 +12,7 @@ import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-ki
 const DEFAULT_CATEGORIES = ['Personal', 'Networking & Jobs', 'Via Terra']
 
 export default function Home() {
+  const { data: session } = useSession()
   const [tasks, setTasks] = useState<Task[]>([])
   const [categories, setCategories] = useState<string[]>(DEFAULT_CATEGORIES)
   const [taskToDelete, setTaskToDelete] = useState<string | null>(null)
@@ -103,9 +105,24 @@ export default function Home() {
 
   return (
     <main className="mx-auto w-full max-w-5xl px-4 py-16">
-      <h1 className="mb-8 text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
-        Amanda's AI Task Manager
-      </h1>
+      <div className="mb-8 flex items-center justify-between">
+        <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
+          Amanda's AI Task Manager
+        </h1>
+        <div className="flex items-center gap-3">
+          {session?.user?.name && (
+            <span className="text-sm text-zinc-500 dark:text-zinc-400">
+              {session.user.name}
+            </span>
+          )}
+          <button
+            onClick={() => signOut({ callbackUrl: '/login' })}
+            className="rounded-lg border border-zinc-200 px-3 py-1.5 text-sm text-zinc-600 transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800"
+          >
+            Sign out
+          </button>
+        </div>
+      </div>
       <TaskInput categories={categories} onAdd={handleAdd} />
       <div className="mt-8 grid grid-cols-3 gap-6">
         {categories.map((category) => {
