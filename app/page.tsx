@@ -62,6 +62,10 @@ export default function Home() {
     setTasks([...tasks, newTask])
   }
 
+  function handleEditTitle(id: string, newTitle: string) {
+    setTasks(tasks.map((task) => task.id === id ? { ...task, title: newTitle } : task))
+  }
+
   function handleToggle(id: string) {
     setTasks(tasks.map((task) =>
       task.id === id ? { ...task, completed: !task.completed } : task
@@ -166,6 +170,7 @@ export default function Home() {
                         task={task}
                         onToggle={handleToggle}
                         onDelete={handleDelete}
+                        onEdit={handleEditTitle}
                       />
                     ))}
                   </ul>
